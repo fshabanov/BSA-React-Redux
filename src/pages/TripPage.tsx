@@ -4,14 +4,22 @@ import trips from "src/data/trips.json";
 import { useEffect } from "react";
 import { useState } from "react";
 import Modal from "src/components/Modal";
-import { ITrip } from "src/@types";
+import { IState, ITrip } from "src/@types";
 import "src/assets/css/tripPage.css";
 import NewTrip from "src/components/trip/NewTrip";
+import { useSelector } from "react-redux";
 
 const TripPage: React.FC = () => {
+	const { user } = useSelector((state: IState) => state.auth);
+	const { query, navigate } = useRouter();
+
+	useEffect(() => {
+		if (!user) {
+			navigate("/sign-in");
+		}
+	}, [user]);
 	const [showModal, setShowModal] = useState(false);
 
-	const { query, navigate } = useRouter();
 	const trip = trips.find((trip) => trip.id === query.id);
 
 	useEffect(() => {

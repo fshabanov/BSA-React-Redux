@@ -1,9 +1,20 @@
-import React from "react";
-import { IBooking } from "src/@types";
+import React, { useEffect } from "react";
+import { IBooking, IState } from "src/@types";
 import bookings from "src/data/bookings.json";
 import "src/assets/css/booking.css";
+import { useSelector } from "react-redux";
+import useRouter from "src/hooks/useRouter";
 
 const Bookings: React.FC = () => {
+	const { user } = useSelector((state: IState) => state.auth);
+	const { navigate } = useRouter();
+
+	useEffect(() => {
+		if (!user) {
+			navigate("/sign-in");
+		}
+	}, [user]);
+
 	const [bookingsToShow, setBookingsToShow] =
 		React.useState<IBooking[]>(bookings);
 

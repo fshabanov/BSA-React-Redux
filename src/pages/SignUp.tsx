@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import isValidEmail from "src/helpers/isValidEmail";
 import useRouter from "src/hooks/useRouter";
@@ -6,13 +6,26 @@ import "src/assets/css/sign.css";
 import EmailInput from "src/components/input/EmailInput";
 import PasswordInput from "src/components/input/PasswordInput";
 import NameInput from "src/components/input/NameInput";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "src/store/store";
+import { authActions } from "src/store/actions";
+import { IState } from "src/@types";
 
 const SignUp: React.FC = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [emailError, setEmailError] = useState("");
+
+	const dispatch = useDispatch<AppDispatch>();
+	const { user } = useSelector((state: IState) => state.auth);
 	const { navigate } = useRouter();
+
+	useEffect(() => {
+		if (user) {
+			navigate("/");
+		}
+	}, [user]);
 
 	const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -20,7 +33,7 @@ const SignUp: React.FC = () => {
 			setEmailError("Invalid email");
 			return;
 		}
-		navigate("/");
+		dispatch(authActions.signUp({ fullName: name, email, password }));
 	};
 	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
 		setName(e.target.value);
