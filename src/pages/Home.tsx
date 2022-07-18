@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IState } from "src/@types";
 import useRouter from "src/hooks/useRouter";
+import { AppDispatch } from "src/store/store";
+import { getTrips } from "src/store/trips/actions";
 import Filter from "../components/Filter";
 import Trips from "../components/trip/Trips";
 
 const Home: React.FC = () => {
 	const { user } = useSelector((state: IState) => state.auth);
+	const { isLoading } = useSelector((state: IState) => state.loading);
 	const { navigate } = useRouter();
+	const dispatch = useDispatch<AppDispatch>();
 
 	useEffect(() => {
-		if (!user) {
+		if (!user && !isLoading) {
 			navigate("/sign-in");
+		} else if (user && !isLoading) {
+			dispatch(getTrips());
 		}
-	}, [user]);
+	}, [user, isLoading]);
 	// Filter states
 	const [search, setSearch] = useState("");
 	const [duration, setDuration] = useState("");

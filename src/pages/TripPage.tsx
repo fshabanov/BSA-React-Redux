@@ -11,13 +11,15 @@ import { useSelector } from "react-redux";
 
 const TripPage: React.FC = () => {
 	const { user } = useSelector((state: IState) => state.auth);
+	const { isLoading } = useSelector((state: IState) => state.loading);
 	const { query, navigate } = useRouter();
+	const { id } = query;
 
 	useEffect(() => {
-		if (!user) {
+		if (!user && !isLoading) {
 			navigate("/sign-in");
 		}
-	}, [user]);
+	}, [user, isLoading]);
 	const [showModal, setShowModal] = useState(false);
 
 	const trip = trips.find((trip) => trip.id === query.id);

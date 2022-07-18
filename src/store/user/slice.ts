@@ -4,7 +4,6 @@ import removeToken from "src/helpers/removeToken";
 
 const initialState = {
 	user: null,
-	isLoading: true,
 };
 
 const userSlice = createSlice({
@@ -13,32 +12,27 @@ const userSlice = createSlice({
 	reducers: {
 		login: (state, action) => {
 			state.user = action.payload;
-			state.isLoading = false;
 		},
 		logout: (state) => {
 			state.user = null;
-			state.isLoading = false;
 			removeToken();
 		},
 	},
 	extraReducers: (builder) => {
-		builder.addMatcher(
-			isAnyOf(getUser.pending, signUp.pending, signIn.pending),
-			(state) => {
-				state.isLoading = true;
-			}
-		);
+		// builder.addMatcher(
+		// 	isAnyOf(getUser.pending, signUp.pending, signIn.pending),
+		// 	(state) => {
+		// 	}
+		// );
 		builder.addMatcher(
 			isAnyOf(getUser.fulfilled, signUp.fulfilled, signIn.fulfilled),
 			(state, action) => {
-				state.isLoading = false;
-				state.user = action.payload.user;
+				state.user = action.payload;
 			}
 		);
 		builder.addMatcher(
 			isAnyOf(getUser.rejected, signUp.rejected, signIn.rejected),
 			(state) => {
-				state.isLoading = false;
 				state.user = null;
 			}
 		);

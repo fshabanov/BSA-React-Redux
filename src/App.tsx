@@ -16,7 +16,7 @@ const TripPage = React.lazy(() => import("./pages/TripPage"));
 
 function App() {
 	const dispatch = useDispatch<AppDispatch>();
-	const { isLoading } = useSelector((state: IState) => state.auth);
+	const { isLoading } = useSelector((state: IState) => state.loading);
 
 	useEffect(() => {
 		dispatch(getUser());

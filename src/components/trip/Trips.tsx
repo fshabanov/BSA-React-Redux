@@ -1,11 +1,11 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { ITrip } from "src/@types";
-import trips from "src/data/trips.json";
+import { IState, ITrip } from "src/@types";
 import filterDuration from "src/helpers/filterDuration";
 import Trip from "./Trip";
 import "src/assets/css/trips.css";
+import { useSelector } from "react-redux";
 
 interface Props {
 	search: string;
@@ -14,10 +14,11 @@ interface Props {
 }
 
 const Trips: React.FC<Props> = ({ duration, level, search }) => {
-	const [filteredTrips, setFilteredTrips] = useState<ITrip[]>(trips);
+	const { items } = useSelector((state: IState) => state.trips);
+	const [filteredTrips, setFilteredTrips] = useState<ITrip[]>(items);
 
 	useEffect(() => {
-		const filtered = trips.filter((trip) => {
+		const filtered = items.filter((trip) => {
 			return (
 				trip.title.toLowerCase().includes(search.toLowerCase()) &&
 				filterDuration(duration, trip) &&
@@ -25,7 +26,7 @@ const Trips: React.FC<Props> = ({ duration, level, search }) => {
 			);
 		});
 		setFilteredTrips(filtered);
-	}, [search, duration, level]);
+	}, [search, duration, level, items]);
 
 	return (
 		<section className="trips">
