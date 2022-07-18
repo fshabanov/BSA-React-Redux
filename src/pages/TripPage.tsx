@@ -1,34 +1,60 @@
 import React from "react";
 import useRouter from "src/hooks/useRouter";
-import trips from "src/data/trips.json";
 import { useEffect } from "react";
 import { useState } from "react";
 import Modal from "src/components/Modal";
 import { IState, ITrip } from "src/@types";
 import "src/assets/css/tripPage.css";
 import NewTrip from "src/components/trip/NewTrip";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import api from "src/api";
+import { TRIPS } from "src/api/constants";
+import axios, { AxiosError } from "axios";
+import { AppDispatch } from "src/store/store";
+import { logout } from "src/store/user/slice";
 
 const TripPage: React.FC = () => {
 	const { user } = useSelector((state: IState) => state.auth);
 	const { isLoading } = useSelector((state: IState) => state.loading);
 	const { query, navigate } = useRouter();
 	const { id } = query;
+	const [trip, setTrip] = useState<ITrip | null>(null);
+
+	const dispatch = useDispatch<AppDispatch>();
 
 	useEffect(() => {
 		if (!user && !isLoading) {
 			navigate("/sign-in");
 		}
 	}, [user, isLoading]);
-	const [showModal, setShowModal] = useState(false);
-
-	const trip = trips.find((trip) => trip.id === query.id);
 
 	useEffect(() => {
-		if (!trip) {
-			navigate("/");
+		if (id) {
+			api
+				.get(`${TRIPS}${id}`)
+				.then((res) => {
+					const { data } = res;
+					setTrip(data);
+				})
+				.catch((err: Error | AxiosError) => {
+					if (axios.isAxiosError(err)) {
+						const status = err.response?.status;
+						if (status === 404) {
+							navigate("/");
+						} else if (status === 401) {
+							dispatch(logout());
+						}
+					} else {
+						alert(err.message);
+					}
+				});
 		}
-	}, []);
+	}, [id]);
+	const [showModal, setShowModal] = useState(false);
+
+	if (!trip) {
+		return null;
+	}
 	const { title, price, description, image, duration, level } = trip as ITrip;
 
 	const handleOpenModal = () => setShowModal(true);

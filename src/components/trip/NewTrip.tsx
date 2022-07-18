@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { ITrip } from "src/@types";
+import { useSelector } from "react-redux";
+import { IState, ITrip } from "src/@types";
+import api from "src/api";
+import { BOOKINGS } from "src/api/constants";
 import "src/assets/css/newTrip.css";
 
 interface Props {
@@ -11,7 +14,8 @@ const NewTrip: React.FC<Props> = ({ trip, onClose }) => {
 	const [numOfGuests, setNumOfGuests] = useState(1);
 	const todaysDate = new Date().toISOString().split("T")[0];
 	const [date, setDate] = useState(todaysDate);
-	const { title, price, duration, level } = trip;
+	const { title, price, duration, level, id } = trip;
+	const { user } = useSelector((state: IState) => state.auth);
 
 	const handleGuestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setNumOfGuests(+e.target.value);
@@ -24,7 +28,15 @@ const NewTrip: React.FC<Props> = ({ trip, onClose }) => {
 			numOfGuests > 0 &&
 			numOfGuests <= 10
 		) {
-			onClose();
+			api
+				.post(`${BOOKINGS}`, {
+					tripId: id,
+					userId: user.id,
+					guests: numOfGuests,
+					date,
+				})
+				.then(() => onClose())
+				.catch((err) => alert(err));
 		}
 	};
 	return (
