@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IState, ITrip } from "src/@types";
 import api from "src/api";
 import { BOOKINGS } from "src/api/constants";
 import "src/assets/css/newTrip.css";
+import { addNewBooking } from "src/store/bookings/slice";
+import { AppDispatch } from "src/store/store";
 
 interface Props {
 	trip: ITrip;
@@ -12,10 +14,13 @@ interface Props {
 
 const NewTrip: React.FC<Props> = ({ trip, onClose }) => {
 	const [numOfGuests, setNumOfGuests] = useState(1);
-	const todaysDate = new Date().toISOString().split("T")[0];
-	const [date, setDate] = useState(todaysDate);
+	const tomorrowsDate = new Date();
+	tomorrowsDate.setDate(tomorrowsDate.getDate() + 1);
+	const [date, setDate] = useState(tomorrowsDate.toISOString().split("T")[0]);
 	const { title, price, duration, level, id } = trip;
 	const { user } = useSelector((state: IState) => state.auth);
+
+	const dispatch = useDispatch<AppDispatch>();
 
 	const handleGuestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setNumOfGuests(+e.target.value);
@@ -24,7 +29,8 @@ const NewTrip: React.FC<Props> = ({ trip, onClose }) => {
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (
-			new Date(date).getTime() >= new Date(todaysDate).getTime() &&
+			new Date(date).getTime() >=
+				new Date(tomorrowsDate.toISOString().split("T")[0]).getTime() &&
 			numOfGuests > 0 &&
 			numOfGuests <= 10
 		) {
@@ -35,7 +41,10 @@ const NewTrip: React.FC<Props> = ({ trip, onClose }) => {
 					guests: numOfGuests,
 					date,
 				})
-				.then(() => onClose())
+				.then((res) => {
+					dispatch(addNewBooking(res.data));
+					onClose();
+				})
 				.catch((err) => alert(err));
 		}
 	};
@@ -66,7 +75,7 @@ const NewTrip: React.FC<Props> = ({ trip, onClose }) => {
 						required
 						value={date}
 						onChange={(e) => setDate(e.target.value)}
-						min={todaysDate}
+						min={tomorrowsDate.toISOString().split("T")[0]}
 					/>
 				</label>
 				<label className="trip-popup__input input">

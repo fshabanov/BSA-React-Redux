@@ -1,13 +1,20 @@
 import React, { useEffect } from "react";
 import { IBooking, IState } from "src/@types";
-import bookings from "src/data/bookings.json";
 import "src/assets/css/booking.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useRouter from "src/hooks/useRouter";
+import { AppDispatch } from "src/store/store";
+import { bookingActions } from "src/store/actions";
+import api from "src/api";
+import { BOOKINGS } from "src/api/constants";
+import { removeBooking } from "src/store/bookings/slice";
 
 const Bookings: React.FC = () => {
 	const { user } = useSelector((state: IState) => state.auth);
+	const { items } = useSelector((state: IState) => state.bookings);
 	const { navigate } = useRouter();
+
+	const dispatch = useDispatch<AppDispatch>();
 
 	useEffect(() => {
 		if (!user) {
@@ -15,23 +22,30 @@ const Bookings: React.FC = () => {
 		}
 	}, [user]);
 
-	const [bookingsToShow, setBookingsToShow] =
-		React.useState<IBooking[]>(bookings);
+	useEffect(() => {
+		if (!items.length) {
+			dispatch(bookingActions.getBookings());
+		}
+	}, []);
 
 	const handleDelete = (id: string) => {
-		const newBookings = bookingsToShow.filter((booking) => booking.id !== id);
-		setBookingsToShow(newBookings);
+		api
+			.delete(`${BOOKINGS}${id}`)
+			.then(() => {
+				dispatch(removeBooking(id));
+			})
+			.catch((err) => alert(err.message));
 	};
 
 	return (
 		<main className="bookings-page">
 			<h1 className="visually-hidden">Travel App</h1>
 			<ul className="bookings__list">
-				{bookingsToShow
-					.sort(
-						(a, b) =>
-							new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-					)
+				{items
+					// .sort(
+					// 	(a, b) =>
+					// 		new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+					// )
 					.map((booking: IBooking) => {
 						const {
 							trip: { title, price },

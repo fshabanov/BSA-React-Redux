@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { IState } from "src/@types";
 import useRouter from "src/hooks/useRouter";
 import { AppDispatch } from "src/store/store";
-import { getTrips } from "src/store/trips/actions";
+import { tripActions } from "src/store/actions";
 import Filter from "../components/Filter";
 import Trips from "../components/trip/Trips";
 
@@ -16,10 +16,12 @@ const Home: React.FC = () => {
 	useEffect(() => {
 		if (!user && !isLoading) {
 			navigate("/sign-in");
-		} else if (user && !isLoading) {
-			dispatch(getTrips());
 		}
 	}, [user, isLoading]);
+
+	useEffect(() => {
+		dispatch(tripActions.getTrips());
+	}, []);
 	// Filter states
 	const [search, setSearch] = useState("");
 	const [duration, setDuration] = useState("");

@@ -4,9 +4,14 @@ import axios from "axios";
 
 const api = axios.create({
 	baseURL: BASE_URL,
-	headers: {
-		Authorization: `Bearer ${getToken()}`,
-	},
 });
 
+function updateApiToken(token: string) {
+	api.defaults.headers.common.Authorization = `Bearer ${token}`;
+}
+
+updateApiToken(getToken() || "");
+
 export default api;
+
+export { updateApiToken };

@@ -11,17 +11,17 @@ const tripSlice = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {
-		builder.addMatcher(isAnyOf(getTrips.pending), (state) => {
-			// state.isLoading = true;
-		});
+		// builder.addMatcher(isAnyOf(getTrips.pending), (state) => {
+		// 	// state.isLoading = true;
+		// });
 		builder.addMatcher(isAnyOf(getTrips.fulfilled), (state, action) => {
 			// state.isLoading = false;
 			state.items = action.payload;
 		});
-		builder.addMatcher(isAnyOf(getTrips.rejected), (state, action) => {
-			// state.isLoading = false;
-			console.log(action);
-		});
+		// builder.addMatcher(isAnyOf(getTrips.rejected), (state, action) => {
+		// 	// state.isLoading = false;
+		// 	console.log(action);
+		// });
 	},
 });
 

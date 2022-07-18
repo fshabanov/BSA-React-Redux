@@ -1,4 +1,4 @@
-import { ITrip } from "src/@types";
+import { ITrip, IBooking } from "src/@types";
 import IUser from "./user";
 
 export default interface IState {
@@ -10,5 +10,8 @@ export default interface IState {
 	};
 	loading: {
 		isLoading: boolean;
+	};
+	bookings: {
+		items: IBooking[];
 	};
 }
