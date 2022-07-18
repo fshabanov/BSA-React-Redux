@@ -1,15 +1,14 @@
-import { IUserLogin } from "src/@types";
-import setTokenCookie from "src/helpers/setToken";
-import IUserSignup from "src/@types/userSignup";
-import { AUTH, CURRENT_USER, SIGN_UP, SIGN_IN } from "./../../api/constants";
-import api from "src/api/index";
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import removeToken from "src/helpers/removeToken";
-import { setLoading } from "../loading/slice";
-import { AxiosError } from "axios";
+import { IUserLogin } from 'src/@types';
+import setTokenCookie from 'src/helpers/setToken';
+import IUserSignup from 'src/@types/userSignup';
+import { AUTH, CURRENT_USER, SIGN_UP, SIGN_IN } from './../../api/constants';
+import api from 'src/api/index';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { setLoading } from '../loading/slice';
+import { logout } from './slice';
 
 export const getUser = createAsyncThunk(
-	"user/getUser",
+	'user/getUser',
 	async (args, thunkAPI) => {
 		thunkAPI.dispatch(setLoading(true));
 		try {
@@ -17,7 +16,7 @@ export const getUser = createAsyncThunk(
 			thunkAPI.dispatch(setLoading(false));
 			return res.data;
 		} catch (err: any) {
-			removeToken();
+			thunkAPI.dispatch(logout());
 			thunkAPI.dispatch(setLoading(false));
 			return thunkAPI.rejectWithValue(err.message);
 		}
@@ -25,7 +24,7 @@ export const getUser = createAsyncThunk(
 );
 
 export const signUp = createAsyncThunk(
-	"user/signUp",
+	'user/signUp',
 	async (user: IUserSignup, thunkAPI) => {
 		thunkAPI.dispatch(setLoading(true));
 		try {
@@ -35,7 +34,7 @@ export const signUp = createAsyncThunk(
 			thunkAPI.dispatch(setLoading(false));
 			return data.user;
 		} catch (err: any) {
-			removeToken();
+			thunkAPI.dispatch(logout());
 			thunkAPI.dispatch(setLoading(false));
 			return thunkAPI.rejectWithValue(err.message);
 		}
@@ -43,7 +42,7 @@ export const signUp = createAsyncThunk(
 );
 
 export const signIn = createAsyncThunk(
-	"users/signIn",
+	'users/signIn',
 	async (user: IUserLogin, thunkAPI) => {
 		thunkAPI.dispatch(setLoading(true));
 		try {
@@ -53,7 +52,7 @@ export const signIn = createAsyncThunk(
 			thunkAPI.dispatch(setLoading(false));
 			return data.user;
 		} catch (err: any) {
-			removeToken();
+			thunkAPI.dispatch(logout());
 			thunkAPI.dispatch(setLoading(false));
 			return thunkAPI.rejectWithValue(err.message);
 		}

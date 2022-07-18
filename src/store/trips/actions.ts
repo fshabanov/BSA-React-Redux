@@ -1,3 +1,4 @@
+import handleError from "src/helpers/handleError";
 import { ITrip } from "src/@types";
 import { TRIPS } from "./../../api/constants";
 import api from "src/api/index";
@@ -12,6 +13,7 @@ export const getTrips = createAsyncThunk(
 			return data;
 		} catch (err: any /* AxiosError */) {
 			console.log(err);
+			handleError(err, thunkAPI);
 			return thunkAPI.rejectWithValue(err.message);
 		}
 	}
